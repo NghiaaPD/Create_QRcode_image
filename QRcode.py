@@ -1,0 +1,53 @@
+from tkinter import*
+from os import*
+import pyttsx3
+import qrcode as qr
+from tkinter.ttk import Combobox
+
+
+system = Tk()
+system.geometry("1000x1000")
+system.title("chương trình tạo mã QRcode")
+system.configure(bg="#58C8F5")
+
+Label_Main = Label(system,text="Đầu vào",font=("Arial Bold",15),bg="#000000",fg="white",height=1)
+Label_Main.place(relx=.1,rely=.04)
+
+Main_input = Text(system,width=40,height =5,font=("Lato-Black",10))
+Main_input.place(relx=.0, rely=.1) 
+
+
+
+Label_Name = Label(system,text="Tên",font=("Arial Bold",15),bg="#000000",fg="white",height=1)
+Label_Name.place(relx=.35,rely=.04)
+
+Name_input = Text(system,width=20,height =5, font=("Lato-Black",10))
+Name_input.place(relx=.3, rely=.1)
+
+
+Format_Label = Label(system,text="Chọn định dạng ảnh QR",font=("Arial bold",15),bg="#000000",fg="white",height=1)
+Format_Label.place(relx=.1, rely=.25)
+
+Format_choose = Combobox(system, width = 27)
+Format_choose['values'] = ('.png', 
+                          '.jpg',
+                          '.webp',
+                        )
+Format_choose.place(relx = .1, rely=.3)
+Format_choose.current()
+
+def delete():
+    Main_input.delete(0.0,END)
+    Name_input.delete(0.0,END)
+Delete_button = Button(system,text="Delete",font=("Arial Bold",10),bg="#000000",fg="white", command = delete)
+Delete_button.place(relx=.2, rely=.2)   
+
+def make_QR():
+    data = Main_input.get(0.0,END) 
+    img = qr.make(data)
+    img.save(str(Name_input.get(0.0,END)).strip('\n') + str(Format_choose.get()))
+Start_button = Button(system,text="Create a QR picture",font=("Arial Bold",10),bg="#000000",fg="white", command=make_QR)
+Start_button.place(relx=.05,rely=.2)     
+
+system = mainloop()
+
