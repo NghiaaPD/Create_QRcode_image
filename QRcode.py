@@ -1,14 +1,22 @@
 from tkinter import*
 from os import*
-import pyttsx3
 import qrcode as qr
 from tkinter.ttk import Combobox
-
+from PIL import Image,ImageTk
+import cv2
+import numpy as np
 
 system = Tk()
-system.geometry("1000x1000")
+system.geometry("1000x850")
 system.title("chương trình tạo mã QRcode")
-system.configure(bg="#58C8F5")
+# system.configure(bg="#58C8F5")
+background = Image.open("Nam.png")
+background_size=background.resize((1000,900))
+background_ImageTk = ImageTk.PhotoImage(background_size)
+background_Label = Label(system,image=background_ImageTk)
+background_Label.place(x=0,y=0)
+
+
 
 Label_Main = Label(system,text="Đầu vào",font=("Arial Bold",15),bg="#000000",fg="white",height=1)
 Label_Main.place(relx=.1,rely=.04)
@@ -26,28 +34,50 @@ Name_input.place(relx=.3, rely=.1)
 
 
 Format_Label = Label(system,text="Chọn định dạng ảnh QR",font=("Arial bold",15),bg="#000000",fg="white",height=1)
-Format_Label.place(relx=.1, rely=.25)
+Format_Label.place(relx=.1, rely=.3)
 
 Format_choose = Combobox(system, width = 27)
 Format_choose['values'] = ('.png', 
                           '.jpg',
                           '.webp',
                         )
-Format_choose.place(relx = .1, rely=.3)
+Format_choose.place(relx = .1, rely=.35)
 Format_choose.current()
 
 def delete():
     Main_input.delete(0.0,END)
     Name_input.delete(0.0,END)
 Delete_button = Button(system,text="Delete",font=("Arial Bold",10),bg="#000000",fg="white", command = delete)
-Delete_button.place(relx=.2, rely=.2)   
+Delete_button.place(relx=.2, rely=.2)
 
 def make_QR():
     data = Main_input.get(0.0,END) 
     img = qr.make(data)
     img.save(str(Name_input.get(0.0,END)).strip('\n') + str(Format_choose.get()))
 Start_button = Button(system,text="Create a QR picture",font=("Arial Bold",10),bg="#000000",fg="white", command=make_QR)
-Start_button.place(relx=.05,rely=.2)     
+Start_button.place(relx=.05,rely=.2)    
+
+def make_QR_split():
+    data = Main_input.get(0.0,END)
+    img = qr.make(data)
+    img.save(str(Name_input.get(0.0,END)).strip('\n') + str(Format_choose.get()))
+
+    # Chuyển đổi PIL Image sang numpy array
+    image_split = np.array(img.getdata(), dtype=np.uint8).reshape(img.size[1], img.size[0])
+    height, width = image_split.shape
+
+    # Cắt bức ảnh thành 2 phần
+    part1 = image_split[0:height, 0:width//2]
+    part2 = image_split[0:height, width//2:width]
+
+    # Lưu 2 phần cắt được vào 2 tập tin khác nhau
+    cv2.imwrite(str(Name_input.get(0.0,END)).strip('\n') + "1" + str(Format_choose.get()), part1)
+    cv2.imwrite(str(Name_input.get(0.0,END)).strip('\n') + "2" + str(Format_choose.get()), part2)
+
+
+Result_button_2 = Button(system,text="Tạo ảnh QR đã được cắt",font=("Arial Bold",10),bg="#000000",fg="white", command=make_QR_split)
+Result_button_2.place(relx=.05,rely=.25)
+
 
 system = mainloop()
 
