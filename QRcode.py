@@ -1,5 +1,4 @@
 from tkinter import*
-from os import*
 import qrcode as qr
 from tkinter.ttk import Combobox
 from PIL import Image,ImageTk
@@ -22,7 +21,7 @@ Label_Main = Label(system,text="Đầu vào",font=("Arial Bold",15),bg="#000000"
 Label_Main.place(relx=.1,rely=.04)
 
 Main_input = Text(system,width=40,height =5,font=("Lato-Black",10))
-Main_input.place(relx=.0, rely=.1) 
+Main_input.place(relx=.0, rely=.1)
 
 
 
@@ -37,7 +36,7 @@ Format_Label = Label(system,text="Chọn định dạng ảnh QR",font=("Arial b
 Format_Label.place(relx=.1, rely=.3)
 
 Format_choose = Combobox(system, width = 27)
-Format_choose['values'] = ('.png', 
+Format_choose['values'] = ('.png',
                           '.jpg',
                           '.webp',
                         )
@@ -51,11 +50,11 @@ Delete_button = Button(system,text="Delete",font=("Arial Bold",10),bg="#000000",
 Delete_button.place(relx=.2, rely=.2)
 
 def make_QR():
-    data = Main_input.get(0.0,END) 
+    data = Main_input.get(0.0,END)
     img = qr.make(data)
     img.save(str(Name_input.get(0.0,END)).strip('\n') + str(Format_choose.get()))
 Start_button = Button(system,text="Create a QR picture",font=("Arial Bold",10),bg="#000000",fg="white", command=make_QR)
-Start_button.place(relx=.05,rely=.2)    
+Start_button.place(relx=.05,rely=.2)
 
 def make_QR_split():
     data = Main_input.get(0.0,END)
@@ -64,15 +63,34 @@ def make_QR_split():
 
     # Chuyển đổi PIL Image sang numpy array
     image_split = np.array(img.getdata(), dtype=np.uint8).reshape(img.size[1], img.size[0])
-    height, width = image_split.shape
+    height, width = image_split.shape[:2]
 
-    # Cắt bức ảnh thành 2 phần
-    part1 = image_split[0:height, 0:width//2]
-    part2 = image_split[0:height, width//2:width]
+    # Cắt bức ảnh thành 10 phần
+    part1 = image_split[0:height // 2, 0:(width // 5)]
+    part2 = image_split[0:height // 2, (width // 5):(2 * width // 5)]
+    part3 = image_split[0:height // 2, (2 * width // 5):(3 * width // 5)]
+    part4 = image_split[0:height // 2, (3 * width // 5):(4 * width // 5)]
+    part5 = image_split[0:height // 2, (4 * width // 5):width]
+
+    part6 = image_split[height // 2:height, 0:(width // 5)]
+    part7 = image_split[height // 2:height, (width // 5):(2 * width // 5)]
+    part8 = image_split[height // 2:height, (2 * width // 5):(3 * width // 5)]
+    part9 = image_split[height // 2:height, (3 * width // 5):(4 * width // 5)]
+    part10 = image_split[height // 2:height, (4 * width // 5):width]
 
     # Lưu 2 phần cắt được vào 2 tập tin khác nhau
-    cv2.imwrite(str(Name_input.get(0.0,END)).strip('\n') + "1" + str(Format_choose.get()), part1)
-    cv2.imwrite(str(Name_input.get(0.0,END)).strip('\n') + "2" + str(Format_choose.get()), part2)
+    cv2.imwrite(str(Name_input.get(0.0, END)).strip('\n') + "1" + str(Format_choose.get()), part1)
+    cv2.imwrite(str(Name_input.get(0.0, END)).strip('\n') + "2" + str(Format_choose.get()), part2)
+    cv2.imwrite(str(Name_input.get(0.0, END)).strip('\n') + "3" + str(Format_choose.get()), part3)
+    cv2.imwrite(str(Name_input.get(0.0, END)).strip('\n') + "4" + str(Format_choose.get()), part4)
+    cv2.imwrite(str(Name_input.get(0.0, END)).strip('\n') + "5" + str(Format_choose.get()), part5)
+    cv2.imwrite(str(Name_input.get(0.0, END)).strip('\n') + "6" + str(Format_choose.get()), part6)
+    cv2.imwrite(str(Name_input.get(0.0, END)).strip('\n') + "7" + str(Format_choose.get()), part7)
+    cv2.imwrite(str(Name_input.get(0.0, END)).strip('\n') + "8" + str(Format_choose.get()), part8)
+    cv2.imwrite(str(Name_input.get(0.0, END)).strip('\n') + "9" + str(Format_choose.get()), part9)
+    cv2.imwrite(str(Name_input.get(0.0, END)).strip('\n') + "10" + str(Format_choose.get()), part10)
+
+
 
 
 Result_button_2 = Button(system,text="Tạo ảnh QR đã được cắt",font=("Arial Bold",10),bg="#000000",fg="white", command=make_QR_split)
@@ -80,4 +98,3 @@ Result_button_2.place(relx=.05,rely=.25)
 
 
 system = mainloop()
-
